@@ -46,9 +46,9 @@ if [[ ! -z "$BLOCKCHAIN_TIME" ]]; then
     cd ${COMPRESSPATH:-$HOME}
     echo steemdsync: compressing blockchainstate...
     if [[ "$USE_RAMDISK" ]]; then
-      tar vcf blockchain.tar.bz2 --use-compress-prog=pbzip2 -C $HOME blockchain -C /mnt/ramdisk blockchain
+      tar czf blockchain.tar.bz2 -C $HOME blockchain -C /mnt/ramdisk blockchain
     else
-      tar cf blockchain.tar.bz2 --use-compress-prog=pbzip2 -C $HOME blockchain
+      tar czf blockchain.tar.bz2 -C $HOME blockchain
     fi
     if [[ ! $? -eq 0 ]]; then
       echo NOTIFYALERT! steemdsync was unable to compress shared memory file, check the logs.
