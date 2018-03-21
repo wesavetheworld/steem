@@ -62,26 +62,26 @@ mv /etc/nginx/nginx.conf /etc/nginx/nginx.original.conf
 cp /etc/nginx/steemd.nginx.conf /etc/nginx/nginx.conf
 
 # get blockchain state from an S3 bucket
-echo steemd: beginning download and decompress of s3://$S3_BUCKET/blockchain-$VERSION-latest.tar.bz2
+echo steemd: beginning download and decompress of s3://$S3_BUCKET/blockchain-$VERSION-latest.tar.gz
 if [[ "$USE_RAMDISK" ]]; then
   mkdir -p /mnt/ramdisk
   mount -t ramfs -o size=${RAMDISK_SIZE_IN_MB:-51200}m ramfs /mnt/ramdisk
   ARGS+=" --shared-file-dir=/mnt/ramdisk/blockchain"
   if [[ "$IS_BROADCAST_NODE" ]]; then
-    aws s3 --region us-east-1 cp s3://$S3_BUCKET/broadcast-$VERSION-latest.tar.bz2 - | tar xz --wildcards 'blockchain/block*' -C /mnt/ramdisk 'blockchain/shared*'
+    aws s3 --region us-east-1 cp s3://$S3_BUCKET/broadcast-$VERSION-latest.tar.gz - | tar xz --wildcards 'blockchain/block*' -C /mnt/ramdisk 'blockchain/shared*'
   elif [[ "$IS_AH_NODE" ]]; then
-    aws s3 --region us-east-1 cp s3://$S3_BUCKET/ahnode-$VERSION-latest.tar.bz2 - | tar xz --wildcards 'blockchain/block*' -C /mnt/ramdisk 'blockchain/shared*'
+    aws s3 --region us-east-1 cp s3://$S3_BUCKET/ahnode-$VERSION-latest.tar.gz - | tar xz --wildcards 'blockchain/block*' -C /mnt/ramdisk 'blockchain/shared*'
   else
-    aws s3 --region us-east-1 cp s3://$S3_BUCKET/blockchain-$VERSION-latest.tar.bz2 - | tar xz --wildcards 'blockchain/block*' -C /mnt/ramdisk 'blockchain/shared*'
+    aws s3 --region us-east-1 cp s3://$S3_BUCKET/blockchain-$VERSION-latest.tar.gz - | tar xz --wildcards 'blockchain/block*' -C /mnt/ramdisk 'blockchain/shared*'
   fi
   chown -R steemd:steemd /mnt/ramdisk/blockchain
 else
   if [[ "$IS_BROADCAST_NODE" ]]; then
-    aws s3 --region us-east-1 cp s3://$S3_BUCKET/broadcast-$VERSION-latest.tar.bz2 - | tar xz
+    aws s3 --region us-east-1 cp s3://$S3_BUCKET/broadcast-$VERSION-latest.tar.gz - | tar xz
   elif [[ "$IS_AH_NODE" ]]; then
-    aws s3 --region us-east-1 cp s3://$S3_BUCKET/ahnode-$VERSION-latest.tar.bz2 - | tar xz
+    aws s3 --region us-east-1 cp s3://$S3_BUCKET/ahnode-$VERSION-latest.tar.gz - | tar xz
   else
-    aws s3 --region us-east-1 cp s3://$S3_BUCKET/blockchain-$VERSION-latest.tar.bz2 - | tar xz
+    aws s3 --region us-east-1 cp s3://$S3_BUCKET/blockchain-$VERSION-latest.tar.gz - | tar xz
   fi
 fi
 if [[ $? -ne 0 ]]; then

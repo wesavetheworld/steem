@@ -46,37 +46,37 @@ if [[ ! -z "$BLOCKCHAIN_TIME" ]]; then
     cd ${COMPRESSPATH:-$HOME}
     echo steemdsync: compressing blockchainstate...
     if [[ "$USE_RAMDISK" ]]; then
-      tar czf blockchain.tar.bz2 -C $HOME blockchain -C /mnt/ramdisk blockchain
+      tar czf blockchain.tar.gz -C $HOME blockchain -C /mnt/ramdisk blockchain
     else
-      tar czf blockchain.tar.bz2 -C $HOME blockchain
+      tar czf blockchain.tar.gz -C $HOME blockchain
     fi
     if [[ ! $? -eq 0 ]]; then
       echo NOTIFYALERT! steemdsync was unable to compress shared memory file, check the logs.
       exit 1
     fi
     if [[ "$IS_BROADCAST_NODE" ]]; then
-      FILE_NAME=broadcast-$VERSION-`date '+%Y%m%d-%H%M%S'`.tar.bz2
+      FILE_NAME=broadcast-$VERSION-`date '+%Y%m%d-%H%M%S'`.tar.gz
     elif [[ "$IS_AH_NODE" ]]; then
-      FILE_NAME=ahnode-$VERSION-`date '+%Y%m%d-%H%M%S'`.tar.bz2
+      FILE_NAME=ahnode-$VERSION-`date '+%Y%m%d-%H%M%S'`.tar.gz
     else
-      FILE_NAME=blockchain-$VERSION-`date '+%Y%m%d-%H%M%S'`.tar.bz2
+      FILE_NAME=blockchain-$VERSION-`date '+%Y%m%d-%H%M%S'`.tar.gz
     fi
     echo steemdsync: uploading $FILE_NAME to $S3_BUCKET
-    aws s3 cp blockchain.tar.bz2 s3://$S3_BUCKET/$FILE_NAME
+    aws s3 cp blockchain.tar.gz s3://$S3_BUCKET/$FILE_NAME
     if [[ ! $? -eq 0 ]]; then
     	echo NOTIFYALERT! steemdsync was unable to upload $FILE_NAME to s3://$S3_BUCKET
     	exit 1
     fi
     echo steemdsync: replacing current version of blockchain state with $FILE_NAME
     if [[ "$IS_BROADCAST_NODE" ]]; then
-      aws s3 cp s3://$S3_BUCKET/$FILE_NAME s3://$S3_BUCKET/broadcast-$VERSION-latest.tar.bz2
-      aws s3api put-object-acl --bucket $S3_BUCKET --key broadcast-$VERSION-latest.tar.bz2 --acl public-read
+      aws s3 cp s3://$S3_BUCKET/$FILE_NAME s3://$S3_BUCKET/broadcast-$VERSION-latest.tar.gz
+      aws s3api put-object-acl --bucket $S3_BUCKET --key broadcast-$VERSION-latest.tar.gz --acl public-read
     elif [[ "$IS_AH_NODE" ]]; then
-      aws s3 cp s3://$S3_BUCKET/$FILE_NAME s3://$S3_BUCKET/ahnode-$VERSION-latest.tar.bz2
-      aws s3api put-object-acl --bucket $S3_BUCKET --key ahnode-$VERSION-latest.tar.bz2 --acl public-read
+      aws s3 cp s3://$S3_BUCKET/$FILE_NAME s3://$S3_BUCKET/ahnode-$VERSION-latest.tar.gz
+      aws s3api put-object-acl --bucket $S3_BUCKET --key ahnode-$VERSION-latest.tar.gz --acl public-read
     else
-      aws s3 cp s3://$S3_BUCKET/$FILE_NAME s3://$S3_BUCKET/blockchain-$VERSION-latest.tar.bz2
-      aws s3api put-object-acl --bucket $S3_BUCKET --key blockchain-$VERSION-latest.tar.bz2 --acl public-read
+      aws s3 cp s3://$S3_BUCKET/$FILE_NAME s3://$S3_BUCKET/blockchain-$VERSION-latest.tar.gz
+      aws s3api put-object-acl --bucket $S3_BUCKET --key blockchain-$VERSION-latest.tar.gz --acl public-read
     fi
     if [[ ! $? -eq 0 ]]; then
     	echo NOTIFYALERT! steemdsync was unable to overwrite the current blockchainstate with $FILE_NAME
@@ -91,7 +91,7 @@ if [[ ! -z "$BLOCKCHAIN_TIME" ]]; then
     # kill the container starting the process over again
     echo steemdsync: stopping the container after a sync operation
     if [[ -e /tmp/isnewsync ]]; then
-      echo notifysteemdsync: steemdsync: successfully generated and uploaded new blockchain-$VERSION-latest.tar.bz2 to s3://$S3_BUCKET
+      echo notifysteemdsync: steemdsync: successfully generated and uploaded new blockchain-$VERSION-latest.tar.gz to s3://$S3_BUCKET
     fi
     RUN_SV_PID=`pgrep -f /etc/service/steemd`
     kill -9 $RUN_SV_PID
